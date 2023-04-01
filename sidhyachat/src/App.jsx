@@ -1,16 +1,19 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { Routes,Route } from "react-router-dom";
+import HomePage from './pages/HomePage'
+import  ChatPage  from "./pages/ChatPage";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App=()=> {
 
   return (
     <div className="App">
-      hii
+      <Routes>
+        <Route path='/' Component={HomePage} exact />
+        <Route path='/chats' Component={ChatPage}/>
+      </Routes>
     </div>
   )
 }
 
-export default App
+export default App 
+//#9 25:17
