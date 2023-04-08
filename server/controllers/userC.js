@@ -35,7 +35,7 @@ const register =asyncHandler(async(req,res)=>{
             pic
         })
 
-        const newUser = {
+        const userInfo = {
             _id:user._id,
             name:user.name,
             email:user.email,
@@ -46,7 +46,7 @@ const register =asyncHandler(async(req,res)=>{
         if(!user){
             res.status(400).json({message:"User Not Created"})
         }else{
-            res.status(201).json({message:"User Created Successfully ",newUser})
+            res.status(201).json(userInfo)
         }
 
 
@@ -78,7 +78,7 @@ const login =asyncHandler(async(req,res)=>{
 
         const matchPassword = await bcrypt.compare(password,foundUser.password)
 
-        const loggedUser={
+        const userInfo={
             _id:foundUser._id,
             name:foundUser.name,
             email:foundUser.email,
@@ -89,7 +89,7 @@ const login =asyncHandler(async(req,res)=>{
         if(!matchPassword){
             res.status(400).json({message:"Invalid Creadientials"})
         }else{
-            res.status(200).json({message:"User Logged in Successfully ",loggedUser})
+            res.status(200).json(userInfo)
         }
 
 
@@ -100,10 +100,26 @@ const login =asyncHandler(async(req,res)=>{
 
 })
 
+//api/user?search=sidhya
+const allUsers = asyncHandler(async(req,res)=>{
+    const keywords = req.query.search 
+    ?{
+        $or:[
+            {name:{$regex: req.query.search , $options:"i" }},
+            {email:{$regex: req.query.search , $options:"i" }},
+        ]
+    } :{} ;
+
+    const users = await User.find(keywords).find({ _id : { $ne : req.user._id }})
+
+    res.status(200).send(users)
+})
+
 
 
 
 module.exports = {
     register,
-    login
+    login,
+    allUsers
 }

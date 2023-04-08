@@ -12,6 +12,10 @@ const chatSchema = new Schema({
         type:String,
         trim:true
     },
+    isGroupChat:{
+        type:Boolean,
+        default:false
+    },
     users:[
         {
             type:mongoose.Schema.Types.ObjectId,
