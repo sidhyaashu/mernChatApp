@@ -18,6 +18,7 @@ import {
   Input,
   Divider,
   useToast,
+  Spinner,
 } from '@chakra-ui/react';
 import {useDisclosure} from "@chakra-ui/hooks"
 import { ChatState } from './../../contex/ChatProvider';
@@ -41,7 +42,7 @@ const SideDrawer = () => {
   const [loadingChat, setLoadingChat] = useState();
   const { isOpen,onOpen,onClose } = useDisclosure()
 
-  const { user } = ChatState()
+  const { user ,selectedChat, setSelectedChat ,chats, setChats } = ChatState()
 
   const logOutHandler =()=>{
     localStorage.removeItem("userInfo")
@@ -89,7 +90,32 @@ const SideDrawer = () => {
 
   }
 
-  const accessChat =(id)=>{
+  const accessChat =async(userId)=>{
+    try {
+      setLoadingChat(true)
+      const config={
+        headers:{
+          "Content-type":"application/json",
+          Authorization:`Bearer ${user.token}`
+        }
+      }
+
+      const { data } = await axios.post("http://localhost:5000/api/chat",{userId},config)
+
+      if(!chats.find((c)=>c._id === data._id)) setChats([data,...chats])
+      setSelectedChat(data)
+      setLoadingChat(false)
+      onClose()
+    } catch (error) {
+      toast({
+        title:"Error Occured! :(",
+        description:"Failed to load the search Result",
+        status:"error",
+        duration:3000,
+        isClosable:true,
+        position:"bottom-left"
+      })
+    }
 
   }
 
@@ -173,6 +199,7 @@ const SideDrawer = () => {
             ))
           )
         }
+        {loadingChat && <Spinner ml="auto" display="flex"/>}
       </DrawerBody>
       </DrawerContent>
       
